@@ -2,9 +2,6 @@
 
 @section('content')
 
-    @foreach($ordersProduct as $product)
-        {{$product->title}} {{$product->quantity}} {{$product->price}}
-        {{$product->price * $product->quantity}}
-    @endforeach
+    <cart :order-products='{{$ordersProduct}}'/>
 
-    @endsection
+@endsection

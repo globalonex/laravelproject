@@ -60,28 +60,27 @@ export default {
                 this.quantity = data.quantity
             })
             .catch(error => {
-                if(error.response.status == 401) {
+                if (error.response.status == 401) {
                     Swal.fire({
-                        title: 'Товар не найден',
+                        title: 'Товар не добавлен',
                         text: 'Авторизуйтесь',
                         icon: 'error',
-                        confirmButtonText: 'OK'
-                    })
+                        confirmButtonText: 'OK('
+                        })
                 }
             })
             .finally(() => {
                 this.processing = false
-            });
+            })
         }
     },
     mounted () {
         const product = this.ordersProducts.find((orderProduct => {
             return orderProduct.product_id == this.product.id
         }))
-        if(product) {
+        if (product) {
             this.quantity = product.quantity
         }
-        
     }
 }
 </script>
