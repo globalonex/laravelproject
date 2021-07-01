@@ -14,6 +14,7 @@ class CategoryController extends Controller
 
     public function welcome ()
     {
+       
         $categories = Category::get();
         return view('welcome', [
             'categories' => $categories,

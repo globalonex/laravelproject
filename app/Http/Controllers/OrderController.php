@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\OrdersProduct;
 use App\Models\Product;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -12,6 +13,25 @@ use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
+    public function products(Order $orderId)
+    {
+        // TODO:: Получить модель из параметра
+        $order = Order::find($orderId);
+        return DB::table('orders_products as op')
+        ->select(
+            'op.id',
+            'op.quantity',
+            'op.product_id',
+            'p.title',
+            'p.price',
+            'p.picture'
+            
+        )
+        ->join('products as p', 'p.id', 'op.product_id')
+        ->where('op.order_id', $order->first()->id)
+        ->get();
+    }
+
     public function finish()
     {
         $user = Auth::user();
@@ -39,10 +59,17 @@ class OrderController extends Controller
             'sum' => $sum
         ];
         // отправка
-        Mail::send('mail.orderFinish', $data, function($message) use ($user) {
-            $message->subject('Новый заказ');
-            $message->to($user->email);
-        });
+        try {
+            $res = Mail::send('mail.orderFinish', $data, function($message) use ($user) {
+                $message->subject('Новый заказ');
+                $message->to($user->email);
+            });
+        } catch (Exception $e) {
+
+        }
+
+        $order->status = 1;
+        $order->save();
     }
     public function cart() 
     {
