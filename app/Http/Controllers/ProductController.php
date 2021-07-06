@@ -7,6 +7,11 @@ use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
+    public function getCategoryProducts($categoryId)
+    {
+        return Product::where('category_id', $categoryId)->get();
+    }
+
     public function list ()
     {
         return view('products');

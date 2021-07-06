@@ -1,5 +1,6 @@
 <template>
     <div class="card mb-3" style="max-width: 540px;">
+
     <div class="row no-gutters">
         <div class="col-md-4">
         <img width="180" :src="`/storage/img/${product.picture}`">
@@ -50,12 +51,13 @@ export default {
     },
     methods: {
         addToOrder (quantityChange) {
+            this.$emit('add-to-order')
             this.processing = true
             const params = {
                 productId: this.product.id,
                 quantityChange
             }
-            axios.post('/order/addProduct', params)
+            axios.post('/api/order/addProduct', params)
             .then(({data}) => {
                 this.quantity = data.quantity
             })

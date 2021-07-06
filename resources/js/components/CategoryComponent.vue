@@ -5,7 +5,7 @@
             <p class="card-text">
                 {{category.description}}
             </p>
-            <a :href="`/categories/${category.id}`" class="btn btn-primary">Перейти</a>
+            <router-link :to='`/categories/${category.id}`'>Перейти</router-link>
         </div>
     </div>
 </template>
