@@ -1,5 +1,6 @@
 <template>
     <div>
+        
         <template v-if='loading'>
                 <div v-if='loading' class="spinner-border text-primary" role="status">
             <span class="sr-only">Loading...</span>
@@ -28,6 +29,7 @@ export default {
             loading: true
         }
     },
+
     mounted () {
         axios.get('/api/categories/get')
         .then(({data}) => {

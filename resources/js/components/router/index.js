@@ -5,6 +5,7 @@ Vue.use(VueRouter)
 
 import ProductListComponent from '../ProductListComponent'
 import CategoryListComponent from '../CategoryListComponent'
+import LoginComponent from '../auth/LoginComponent'
 
 const Foo = { template: '<div>foo</div>' }
 const Bar = { template: '<div>bar</div>' }
@@ -16,6 +17,7 @@ const Bar = { template: '<div>bar</div>' }
 // Мы поговорим о вложенных маршрутах позднее.
 const routes = [
   { path: '/', component: CategoryListComponent },
+  { path: '/login', component: LoginComponent},
   { path: '/categories/:categoryId', component: ProductListComponent}
 ]
 

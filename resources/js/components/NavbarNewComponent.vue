@@ -32,7 +32,8 @@
                         
 
                         <li class="nav-item">
-                            <a :href="routeCart" class="nav-link">Корзина</a>
+                            <router-link class="nav-link" to="cart">Корзина</router-link>
+                            
                         </li>
                         
 
@@ -44,19 +45,20 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    <a :href="routeProfile" class="btn btn-link">Личный кабинет</a>
+                                    <router-link class="btn btn-link" to="/profile">Личный кабинет</router-link>
+                                    
                                     <button @click="logout" class="btn btn-link">Выход</button>
                                 </div>
                             </li>
                             </template>
                             <template v-else>
                                                             <li class="nav-item">
-                                    <a class="nav-link" :href="routeLogin">Авторизация</a>
+                                   <router-link to="/login">Авторизация</router-link>
                                 </li>
 
 
                                 <li class="nav-item">
-                                    <a class="nav-link" :href="routeRegister">Регистрация</a>
+                                   <router-link to="/register">Регистрация</router-link>
                                 </li>
                                 </template>
                        
@@ -69,14 +71,22 @@
 <script>
 
 export default {
-    props: ['appName', 'routeLogin', 'routeRegister', 'routeCart', 'routeLogout', 'routeProfile','user'],
+    props: ['appName'],
+    computed: {
+        user() {
+            return this.$store.state.user
+        }
+    },
     methods: {
         logout() {
-            axios.post(this.routeLogout)
+            axios.post('/api/auth/logout')
             .then(() => {
-                window.location.href = '/'
+                this.$store.dispatch('logout')
             })
         }
+    },
+    created () {
+        this.$store.dispatch('getUser')
     }
 
 }
@@ -91,6 +101,9 @@ export default {
     }
     .btn-link:hover {
         color:black;
+    }
+    .nav-item {
+        margin-right: 10px;
     }
 
 </style>

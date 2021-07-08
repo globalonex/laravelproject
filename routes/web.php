@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::any('/', function() {
+Route::any('/{any}', function() {
     return view('layouts.app');
-});
+})->where('any', '.*');
 

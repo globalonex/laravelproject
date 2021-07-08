@@ -30,6 +30,7 @@ Vue.component('navbar', require('./components/NavbarNewComponent.vue').default);
 Vue.component('profile', require('./components/ProfileComponent.vue').default);
 
 import router from './components/router'
+import store from './components/store'
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -39,5 +40,6 @@ import router from './components/router'
 
 const app = new Vue({
     el: '#app',
-    router
+    router,
+    store
 });

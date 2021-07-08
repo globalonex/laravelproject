@@ -29,16 +29,6 @@
 <body>
     <div id="app">
        <navbar app-name="{{ config('app.name', 'Laravel') }}"
-       route-cart="{{ route('cart') }}"
-       route-login="{{ route('login') }}"
-       route-register="{{ route('register') }}"
-       route-logout="{{ route('logout') }}"
-       @if(Auth::user())
-       route-profile="{{ route('profile') }}"
-       :user="{{ Auth::user() }}"
-       @else
-        user=''
-       @endif
        ></navbar>
 
 
