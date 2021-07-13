@@ -54,10 +54,10 @@
 import OrderProductsComponent from './OrderProductsComponent.vue'
 
 export default {
-    props: ['orders'],
     data () {
         return {
-            history: true
+            history: true,
+            orders: []
         }
     },
     computed: {
@@ -77,6 +77,13 @@ export default {
         buttonClass(order) {
             return order.status == 0 ? 'btn-primary' : 'btn-danger'
         }
+        
+    },
+    mounted () {
+        axios.get('/api/order/get')
+        .then(({data}) => {
+            this.orders = data
+        })
     }
 }
 

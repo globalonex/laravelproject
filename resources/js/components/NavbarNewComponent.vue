@@ -32,7 +32,7 @@
                         
 
                         <li class="nav-item">
-                            <router-link class="nav-link" to="cart">Корзина</router-link>
+                            <router-link class="nav-link" to="/cart">Корзина ({{cartProductsQuantity}})</router-link>
                             
                         </li>
                         
@@ -75,6 +75,9 @@ export default {
     computed: {
         user() {
             return this.$store.state.user
+        },
+        cartProductsQuantity() {
+            return this.$store.getters.cartProductsQuantity
         }
     },
     methods: {
@@ -87,6 +90,7 @@ export default {
     },
     created () {
         this.$store.dispatch('getUser')
+        this.$store.dispatch('getCartProducts')
     }
 
 }

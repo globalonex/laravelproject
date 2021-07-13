@@ -13,6 +13,11 @@ use Illuminate\Support\Facades\Mail;
 
 class OrderController extends Controller
 {
+    public function orders()
+    {
+        return Order::get();
+    }
+
     public function products(Order $orderId)
     {
         // TODO:: Получить модель из параметра
@@ -91,7 +96,7 @@ class OrderController extends Controller
             ->where('op.order_id', $order->id)
             ->get();
         }
-        return view('cart', ['ordersProduct' => $ordersProduct]);
+        return $ordersProduct;
     }
 
     public function addProduct(Request $request)

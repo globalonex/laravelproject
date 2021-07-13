@@ -61,18 +61,28 @@ export default {
         return {
             email: '',
             password: '',
-            errors: []
+            
+        }
+    },
+    computed: {
+        errors () {
+            return this.$store.state.loginErrors
         }
     },
     methods: {
         login () {
-            this.errors = []
+            
             const params = {
                 email: this.email,
                 password: this.password
             }
             this.$store.dispatch('login', params)
-            
+            .then(() =>{
+                setTimeout(() => {
+                    this.$router.push('/profile')
+                }, 500);
+            })
+                
         }
     }
 }

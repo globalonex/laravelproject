@@ -55,6 +55,7 @@ Route::prefix('order')->middleware('auth')->group(function() {
     Route::get('{orderId}/products', [OrderController::class, 'products']);
     Route::get('cart', [OrderController::class, 'cart'])->name('cart');
     Route::get('finish', [OrderController::class, 'finish']);
+    Route::get('get', [OrderController::class, 'orders']);
     Route::post('addProduct', [OrderController::class, 'addProduct']);
 });
 

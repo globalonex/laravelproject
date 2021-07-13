@@ -6,6 +6,8 @@ Vue.use(VueRouter)
 import ProductListComponent from '../ProductListComponent'
 import CategoryListComponent from '../CategoryListComponent'
 import LoginComponent from '../auth/LoginComponent'
+import CartComponent from '../CartComponent'
+import ProfileComponent from '../ProfileComponent'
 
 const Foo = { template: '<div>foo</div>' }
 const Bar = { template: '<div>bar</div>' }
@@ -18,6 +20,8 @@ const Bar = { template: '<div>bar</div>' }
 const routes = [
   { path: '/', component: CategoryListComponent },
   { path: '/login', component: LoginComponent},
+  { path: '/cart', component: CartComponent},
+  { path: '/profile', component: ProfileComponent},
   { path: '/categories/:categoryId', component: ProductListComponent}
 ]
 

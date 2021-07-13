@@ -41,6 +41,9 @@ class LoginController extends Controller
     }
     public function login(Request $request)
     {
+
+        
+
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
@@ -48,8 +51,10 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-
-            return Auth::user();
+            
+            return [
+                'user' => Auth::user()
+            ];
         }
 
         abort(500, 'Не удалось авторизоваться');

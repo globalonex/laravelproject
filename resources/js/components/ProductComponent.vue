@@ -16,12 +16,12 @@
             <p class="card-text">
                 <small class="text-muted">
                     {{product.price}} руб.
-                    <div v-if='quantity'>
+                    <div v-if='productQuantity'>
                         <button  
                         @click='addToOrder(-1)' 
                         :disabled='processing' 
                         class="btn">-</button>
-                        В корзине {{quantity}}
+                        В корзине {{productQuantity}}
                         <button 
                         @click='addToOrder(1)' 
                         :disabled='processing' 
@@ -42,42 +42,35 @@
 <script>
 const Swal = require('sweetalert2')
 export default {
-    props: ['product', 'ordersProducts'],
+    props: ['product'],
     data () {
         return {
-            quantity: 0,
+            
             processing: false
+        }
+    },
+    computed: {
+        productQuantity() {
+                const product = this.orderProducts.find(cartProduct => {
+                return cartProduct.product_id == this.product.id
+            })
+            return product ? product.quantity : null
+        },
+        orderProducts () {
+            return this.$store.state.cartProducts
         }
     },
     methods: {
         addToOrder (quantityChange) {
-            this.$emit('add-to-order')
-            this.processing = true
             const params = {
                 productId: this.product.id,
                 quantityChange
             }
-            axios.post('/api/order/addProduct', params)
-            .then(({data}) => {
-                this.quantity = data.quantity
-            })
-            .catch(error => {
-                if (error.response.status == 401) {
-                    Swal.fire({
-                        title: 'Товар не добавлен',
-                        text: 'Авторизуйтесь',
-                        icon: 'error',
-                        confirmButtonText: 'OK('
-                        })
-                }
-            })
-            .finally(() => {
-                this.processing = false
-            })
+            this.$store.dispatch('changeCartProductQuantity', params)
         }
     },
     mounted () {
-        const product = this.ordersProducts.find((orderProduct => {
+        const product = this.orderProducts.find((orderProduct => {
             return orderProduct.product_id == this.product.id
         }))
         if (product) {
