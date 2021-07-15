@@ -14,20 +14,16 @@ const store = new Vuex.Store({
   getters: {
     cartProductsQuantity (state) {
       return  state.cartProducts.reduce((sum, cartProduct) => {
-        return sum += cartProduct.quantity
+        return sum += cartProduct.pivot.quantity
       }, 0)
     }
   },
   actions: {
     changeCartProductQuantity({commit}, params) {
-      axios.post('/api/order/addProduct', params)
+      const method = params.quantityChange > 0 ? 'addProduct' : 'removeProduct'
+      axios.post(`/api/order/${method}`, params)
       .then(({data}) => {
-          if(data.quantity == 0) {
-            commit('deleteCartProduct', data.id)
-          } else {
-            commit('setCartProductQuantity', data)
-
-          }
+        commit('setCartProducts', data)
       })
     },
     getCartProducts({commit}) {
@@ -44,40 +40,28 @@ const store = new Vuex.Store({
       },
     login ({commit, dispatch}, params) {
         commit('clearLoginErrors')
+        return new Promise((res => {
         axios.get('/api/auth/login', {params})
         .then(response => {
             if(response.data.user) {
-                commit('setUser', response.data)
+                commit('setUser', response.data.user)
             } else {
               dispatch('getUser')
             }
+            res()
         })
         .catch(error => {
             commit('setLoginErrors', error.response.data.errors)
         })
+        }))
+        
     },
     logout ({commit}) {
         commit('clearUser')
     }
   },
   mutations: {
-    setCartProductQuantity (state, data) {
-      const product = state.cartProducts.find(product => {
-        return product.id == data.id
-    })
-    const idx = state.cartProducts.indexOf(product)
-    if(idx === -1) {
-      state.cartProducts.push(data)
-    } else {
-      state.cartProducts[idx].quantity = data.quantity
-    }
-    
-    },
-    deleteCartProduct(state, productId) {
-      state.cartProducts = state.cartProducts.filter(product => {
-        return product.id != productId
-    })
-    },
+
     setCartProducts(state, products) {
       state.cartProducts = products
     },

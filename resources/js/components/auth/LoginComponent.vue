@@ -78,9 +78,7 @@ export default {
             }
             this.$store.dispatch('login', params)
             .then(() =>{
-                setTimeout(() => {
-                    this.$router.push('/profile')
-                }, 500);
+                this.$router.push('/')
             })
                 
         }

@@ -1,7 +1,7 @@
 <template>
     
     <div>
-        <div v-if='products'>
+        <div v-if='products.length'>
         <table class="table table-bordered">
             <thead>
                 <tr>
@@ -18,27 +18,27 @@
                     <td>
                         <div>
                             <button  
-                            @click='changeProductQuantity(product.product_id, -1)' 
+                            @click='changeProductQuantity(product.id, -1)' 
                             :disabled='processing' 
                             class="btn">-</button>
-                            В корзине {{product.quantity}}
+                            В корзине {{product.pivot.quantity}}
                             <button 
-                            @click='changeProductQuantity(product.product_id, 1)' 
+                            @click='changeProductQuantity(product.id, 1)' 
                             :disabled='processing' 
                             class="btn" >+</button>
                         </div>
                     
                     </td>
                     <td>{{product.price}}</td>
-                    <td>{{product.quantity}} шт.</td>
-                    <td>{{product.quantity * product.price}}</td>
+                    <td>{{product.pivot.quantity}} шт.</td>
+                    <td>{{product.pivot.quantity * product.price}}</td>
                 </tr>
             </tbody>
         </table>
         <button @click='finishOrder' class="btn btn-success">Оформить заказ</button>
         </div>
         <span v-else>
-            <em>В корзине отсутствует продукты</em>
+            <div class="text-center"><em>В корзине отсутствует продукты</em></div>
         </span>
         
 
@@ -62,13 +62,15 @@ export default {
     },
     methods: {
         finishOrder () {
-            axios.get('/order/finish')
+            axios.get('/api/order/finish')
             .then(() => {
                     Swal.fire({
                         title: 'Готово',
                         text: 'Заказ успешно оформлен',
                         icon: 'success',
                         confirmButtonText: 'OK'
+                    }).then(() => {
+                        this.$router.push('/profile')
                     })
             })
             .catch(() => {

@@ -18,30 +18,18 @@ class OrderController extends Controller
         return Order::get();
     }
 
-    public function products(Order $orderId)
+    public function products($orderId)
     {
         // TODO:: Получить модель из параметра
         $order = Order::find($orderId);
-        return DB::table('orders_products as op')
-        ->select(
-            'op.id',
-            'op.quantity',
-            'op.product_id',
-            'p.title',
-            'p.price',
-            'p.picture'
-            
-        )
-        ->join('products as p', 'p.id', 'op.product_id')
-        ->where('op.order_id', $order->first()->id)
-        ->get();
+        return $order->products;
     }
 
     public function finish()
     {
         $user = Auth::user();
         $order = Order::where('user_id', $user->id)->where('status', 0)->first();
-        $ordersProduct = DB::table('orders_products as op')
+        /*$ordersProduct = DB::table('orders_products as op')
         ->select(
             'op.id',
             'op.quantity',
@@ -53,11 +41,19 @@ class OrderController extends Controller
         )
         ->join('products as p', 'p.id', 'op.product_id')
         ->where('op.order_id', $order->id)
-        ->get();
+        ->get();*/
+        
+        $ordersProduct = $order->products;
+
         // Умножаем ордерпродук на прайс и получаем общую сумму
-        $sum = $ordersProduct->map(function($ordersProduct) {
-            return $ordersProduct->quantity * $ordersProduct->price;
+        $sum = $ordersProduct->map(function($ordersProduct) use ($order) {
+            $order->products()->updateExistingPivot($ordersProduct->id, [
+                'price' => $ordersProduct->price
+            ]);
+            $ordersProduct->save();
+            return $ordersProduct->pivot->quantity * $ordersProduct->price;
         })->sum();
+        
         // дата
         $data = [
             'orderProducts' => $ordersProduct,
@@ -80,23 +76,7 @@ class OrderController extends Controller
     {
         $user = Auth::user();
         $order = Order::where('user_id', $user->id)->where('status', 0)->first();
-        $ordersProduct = collect();
-        if(isset($order)) {
-            $ordersProduct = DB::table('orders_products as op')
-            ->select(
-                'op.id',
-                'op.quantity',
-                'op.product_id',
-                'p.title',
-                'p.price',
-                'p.picture'
-                
-            )
-            ->join('products as p', 'p.id', 'op.product_id')
-            ->where('op.order_id', $order->id)
-            ->get();
-        }
-        return $ordersProduct;
+        return $order ? $order->products : collect();
     }
 
     public function addProduct(Request $request)
@@ -111,7 +91,26 @@ class OrderController extends Controller
 
         $product = Product::find($request['productId']);
 
-        $ordersProduct = OrdersProduct::where('order_id', $order->id)
+        if ($order->products->contains($product)) {
+            $orderProduct = $order->products()->where('product_id', $product->id)->first();
+            $quantity = ++$orderProduct->pivot->quantity;
+            $order->products()->updateExistingPivot($product->id, [
+                'quantity' => $quantity
+            ]);
+            
+        } else {
+            $order->products()->attach($product, [
+                'quantity' => 1,
+                'price' => $product->price
+            ]);
+            $orderProduct = $order->products()->where('product_id', $product->id)->first();
+        
+        }
+        return $order->products()->get();
+
+        
+
+        /*$ordersProduct = OrdersProduct::where('order_id', $order->id)
         ->where('product_id', $product->id)
         ->first();
 
@@ -130,10 +129,31 @@ class OrderController extends Controller
                 'quantity' => 1,
                 'price' => $product->price
             ]);
+        }*/
+
+    }
+    public function removeProduct(Request $request)
+    {
+        $user = Auth::user();
+        $order = Order::where('user_id', $user->id)->where('status', 0)->first();
+        if(!$order) {
+            $order = Order::create([
+                'user_id' => $user->id
+            ]);
         }
-        return $ordersProduct;
 
-         
-
+        $product = Product::find($request['productId']);
+        $orderProduct = $order->products()->where('product_id', $product->id)->first();
+        if($orderProduct->pivot->quantity == 1) {
+            $order->products()->detach($product);
+        } else {
+            $quantity = --$orderProduct->pivot->quantity;
+            $order->products()->updateExistingPivot($product->id, [
+                'quantity' => $quantity
+            ]);
+            
+        }
+        return $order->products()->get();
+        
     }
 }

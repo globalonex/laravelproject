@@ -1908,12 +1908,16 @@ var Swal = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/di
   },
   methods: {
     finishOrder: function finishOrder() {
-      axios.get('/order/finish').then(function () {
+      var _this = this;
+
+      axios.get('/api/order/finish').then(function () {
         Swal.fire({
           title: 'Готово',
           text: 'Заказ успешно оформлен',
           icon: 'success',
           confirmButtonText: 'OK'
+        }).then(function () {
+          _this.$router.push('/profile');
         });
       })["catch"](function () {
         Swal.fire({
@@ -2174,7 +2178,7 @@ __webpack_require__.r(__webpack_exports__);
   computed: {
     orderSum: function orderSum() {
       return this.products.reduce(function (sum, product) {
-        return sum += product.price * product.quantity;
+        return sum += product.pivot.price * product.pivot.quantity;
       }, 0);
     }
   },
@@ -2257,9 +2261,9 @@ var Swal = __webpack_require__(/*! sweetalert2 */ "./node_modules/sweetalert2/di
       var _this = this;
 
       var product = this.orderProducts.find(function (cartProduct) {
-        return cartProduct.product_id == _this.product.id;
+        return cartProduct.id == _this.product.id;
       });
-      return product ? product.quantity : null;
+      return product ? product.pivot.quantity : null;
     },
     orderProducts: function orderProducts() {
       return this.$store.state.cartProducts;
@@ -2751,9 +2755,7 @@ __webpack_require__.r(__webpack_exports__);
         password: this.password
       };
       this.$store.dispatch('login', params).then(function () {
-        setTimeout(function () {
-          _this.$router.push('/profile');
-        }, 500);
+        _this.$router.push('/');
       });
     }
   }
@@ -2951,21 +2953,17 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_3__.default.Store({
   getters: {
     cartProductsQuantity: function cartProductsQuantity(state) {
       return state.cartProducts.reduce(function (sum, cartProduct) {
-        return sum += cartProduct.quantity;
+        return sum += cartProduct.pivot.quantity;
       }, 0);
     }
   },
   actions: {
     changeCartProductQuantity: function changeCartProductQuantity(_ref, params) {
       var commit = _ref.commit;
-      axios__WEBPACK_IMPORTED_MODULE_0___default().post('/api/order/addProduct', params).then(function (_ref2) {
+      var method = params.quantityChange > 0 ? 'addProduct' : 'removeProduct';
+      axios__WEBPACK_IMPORTED_MODULE_0___default().post("/api/order/".concat(method), params).then(function (_ref2) {
         var data = _ref2.data;
-
-        if (data.quantity == 0) {
-          commit('deleteCartProduct', data.id);
-        } else {
-          commit('setCartProductQuantity', data);
-        }
+        commit('setCartProducts', data);
       });
     },
     getCartProducts: function getCartProducts(_ref3) {
@@ -2985,16 +2983,20 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_3__.default.Store({
       var commit = _ref6.commit,
           dispatch = _ref6.dispatch;
       commit('clearLoginErrors');
-      axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/auth/login', {
-        params: params
-      }).then(function (response) {
-        if (response.data.user) {
-          commit('setUser', response.data);
-        } else {
-          dispatch('getUser');
-        }
-      })["catch"](function (error) {
-        commit('setLoginErrors', error.response.data.errors);
+      return new Promise(function (res) {
+        axios__WEBPACK_IMPORTED_MODULE_0___default().get('/api/auth/login', {
+          params: params
+        }).then(function (response) {
+          if (response.data.user) {
+            commit('setUser', response.data.user);
+          } else {
+            dispatch('getUser');
+          }
+
+          res();
+        })["catch"](function (error) {
+          commit('setLoginErrors', error.response.data.errors);
+        });
       });
     },
     logout: function logout(_ref7) {
@@ -3003,23 +3005,6 @@ var store = new vuex__WEBPACK_IMPORTED_MODULE_3__.default.Store({
     }
   },
   mutations: {
-    setCartProductQuantity: function setCartProductQuantity(state, data) {
-      var product = state.cartProducts.find(function (product) {
-        return product.id == data.id;
-      });
-      var idx = state.cartProducts.indexOf(product);
-
-      if (idx === -1) {
-        state.cartProducts.push(data);
-      } else {
-        state.cartProducts[idx].quantity = data.quantity;
-      }
-    },
-    deleteCartProduct: function deleteCartProduct(state, productId) {
-      state.cartProducts = state.cartProducts.filter(function (product) {
-        return product.id != productId;
-      });
-    },
     setCartProducts: function setCartProducts(state, products) {
       state.cartProducts = products;
     },
@@ -42557,7 +42542,7 @@ var render = function() {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _vm.products
+    _vm.products.length
       ? _c("div", [
           _c("table", { staticClass: "table table-bordered" }, [
             _vm._m(0),
@@ -42577,10 +42562,7 @@ var render = function() {
                           attrs: { disabled: _vm.processing },
                           on: {
                             click: function($event) {
-                              return _vm.changeProductQuantity(
-                                product.product_id,
-                                -1
-                              )
+                              return _vm.changeProductQuantity(product.id, -1)
                             }
                           }
                         },
@@ -42588,7 +42570,7 @@ var render = function() {
                       ),
                       _vm._v(
                         "\n                        В корзине " +
-                          _vm._s(product.quantity) +
+                          _vm._s(product.pivot.quantity) +
                           "\n                        "
                       ),
                       _c(
@@ -42598,10 +42580,7 @@ var render = function() {
                           attrs: { disabled: _vm.processing },
                           on: {
                             click: function($event) {
-                              return _vm.changeProductQuantity(
-                                product.product_id,
-                                1
-                              )
+                              return _vm.changeProductQuantity(product.id, 1)
                             }
                           }
                         },
@@ -42612,9 +42591,11 @@ var render = function() {
                   _vm._v(" "),
                   _c("td", [_vm._v(_vm._s(product.price))]),
                   _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(product.quantity) + " шт.")]),
+                  _c("td", [_vm._v(_vm._s(product.pivot.quantity) + " шт.")]),
                   _vm._v(" "),
-                  _c("td", [_vm._v(_vm._s(product.quantity * product.price))])
+                  _c("td", [
+                    _vm._v(_vm._s(product.pivot.quantity * product.price))
+                  ])
                 ])
               }),
               0
@@ -42627,7 +42608,7 @@ var render = function() {
             [_vm._v("Оформить заказ")]
           )
         ])
-      : _c("span", [_c("em", [_vm._v("В корзине отсутствует продукты")])])
+      : _c("span", [_vm._m(1)])
   ])
 }
 var staticRenderFns = [
@@ -42647,6 +42628,14 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("th", [_vm._v("Всего")])
       ])
+    ])
+  },
+  function() {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c("div", { staticClass: "text-center" }, [
+      _c("em", [_vm._v("В корзине отсутствует продукты")])
     ])
   }
 ]
@@ -43013,11 +43002,13 @@ var render = function() {
           return _c("tr", { key: product.id }, [
             _c("td", [_vm._v(_vm._s(product.title))]),
             _vm._v(" "),
-            _c("td", [_vm._v(_vm._s(product.quantity))]),
+            _c("td", [_vm._v(_vm._s(product.pivot.quantity))]),
             _vm._v(" "),
-            _c("td", [_vm._v(_vm._s(product.price))]),
+            _c("td", [_vm._v(_vm._s(product.pivot.price))]),
             _vm._v(" "),
-            _c("td", [_vm._v(_vm._s(product.price * product.quantity))])
+            _c("td", [
+              _vm._v(_vm._s(product.pivot.price * product.pivot.quantity))
+            ])
           ])
         }),
         0

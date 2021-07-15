@@ -51,10 +51,10 @@ export default {
     },
     computed: {
         productQuantity() {
-                const product = this.orderProducts.find(cartProduct => {
-                return cartProduct.product_id == this.product.id
+            const product = this.orderProducts.find(cartProduct => {
+                return cartProduct.id == this.product.id
             })
-            return product ? product.quantity : null
+            return product ? product.pivot.quantity : null
         },
         orderProducts () {
             return this.$store.state.cartProducts

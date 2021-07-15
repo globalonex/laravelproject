@@ -25,7 +25,9 @@ Route::prefix('auth')->group(function() {
     });
 
     Route::middleware('auth:sanctum')->get('/getUser', function (Request $request) {
-    return $request->user();
+    return [
+        'user' => $request->user()
+    ];
 });
 
 });
@@ -57,6 +59,7 @@ Route::prefix('order')->middleware('auth')->group(function() {
     Route::get('finish', [OrderController::class, 'finish']);
     Route::get('get', [OrderController::class, 'orders']);
     Route::post('addProduct', [OrderController::class, 'addProduct']);
+    Route::post('removeProduct', [OrderController::class, 'removeProduct']);
 });
 
 
