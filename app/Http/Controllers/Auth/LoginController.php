@@ -42,8 +42,6 @@ class LoginController extends Controller
     public function login(Request $request)
     {
 
-        
-
         $credentials = $request->validate([
             'email' => ['required', 'email'],
             'password' => ['required'],
@@ -56,7 +54,14 @@ class LoginController extends Controller
                 'user' => Auth::user()
             ];
         }
-
-        abort(500, 'Не удалось авторизоваться');
+        $error = [
+            'errors' => [
+                'user' => [
+                    'Неверный пароль'
+                ]
+            ]
+                ];
+        return response($error, 422);
+        
     }
 }

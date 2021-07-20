@@ -48,6 +48,10 @@
                                     <router-link class="btn btn-link" to="/profile">Личный кабинет</router-link>
                                     
                                     <button @click="logout" class="btn btn-link">Выход</button>
+                                    <template v-if='user.admin'>
+                                        <router-link class="btn btn-link" to='/admin/categories'>Категории</router-link>
+                                        <router-link class="btn btn-link" to='/admin/products'>Продукты</router-link>
+                                    </template>
                                 </div>
                             </li>
                             </template>
@@ -85,6 +89,7 @@ export default {
             axios.post('/api/auth/logout')
             .then(() => {
                 this.$store.dispatch('logout')
+                this.$router.push('/')
             })
         }
     },

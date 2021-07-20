@@ -65,13 +65,13 @@
                 this.picture = e.target.files[0]
             },
             getCategories () {
-                axios.get('/admin/categories/get')
+                axios.get('/api/admin/categories/get')
                 .then(({data}) => {
                     this.categories = data
                 })
             },
             getProducts () {
-                axios.get('/products/get')
+                axios.get('/api/products/get')
                 .then(({data}) => {
                     this.products = data
                 })
@@ -87,7 +87,7 @@
                 fData.append('description', this.description)
                 fData.append('price', this.price)
                 fData.append('categoryId', this.categoryId)
-                axios.post('/admin/products/create', fData)
+                axios.post('/api/admin/products/create', fData)
                 .then(() => {
                     //document.location.reload();
                 })

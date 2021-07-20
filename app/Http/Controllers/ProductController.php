@@ -27,9 +27,20 @@ class ProductController extends Controller
         $price = $request['price'];
         $description = $request['description'];
         $categoryId = $request['categoryId'];
+
+        $request->validate([
+            'categoryId' => ['required'],
+            'name' => ['required'],
+            'price' => ['required'],
+        ]);
+
         $file = $request->file('picture');
-        $filename = time() . $file->getClientOriginalName();
-        $request->file('picture')->storeAs('public/img', $filename);
+        if($file) {
+            $filename = time() . $file->getClientOriginalName();
+            $request->file('picture')->storeAs('public/img', $filename);
+        } else {
+            $filename = '';
+        }
         Product::create([
             'title' => $name,
             'category_id' => $categoryId,

@@ -32,10 +32,13 @@ const store = new Vuex.Store({
         commit('setCartProducts', data)
       })
     },
+    setUser({commit}, user) {
+      commit('setUser', user)
+    },
       getUser({commit}) {
         axios.get('/api/auth/getUser')
         .then(response => {
-            commit('setUser', response.data)
+            commit('setUser', response.data.user)
         })
       },
     login ({commit, dispatch}, params) {
@@ -44,6 +47,7 @@ const store = new Vuex.Store({
         axios.get('/api/auth/login', {params})
         .then(response => {
             if(response.data.user) {
+              
                 commit('setUser', response.data.user)
             } else {
               dispatch('getUser')

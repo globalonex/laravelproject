@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\OrderController;
@@ -20,6 +21,7 @@ use Illuminate\Support\Facades\Auth;
 */
 Route::prefix('auth')->group(function() {
     Route::get('/login', [LoginController::class, 'login']);
+    Route::post('/register', [RegisterController::class, 'register']);
     Route::post('/logout', function() {
         Auth::logout();
     });
@@ -37,7 +39,7 @@ Route::prefix('categories')->group(function() {
     Route::get('/{categoryId}/products', [ProductController::class, 'getCategoryProducts']);
 });
 
-Route::get('/categories/get', [CategoryController::class, 'get']);
+
 Route::get('/categories/{categoryId}', [CategoryController::class, 'show']);
 Route::get('/profile', [ProfileController::class, 'show'])->middleware('auth')->name('profile');
 Route::get('categories/{categoryId}/products', [ProductController::class, 'getCategoryProducts']);
@@ -46,6 +48,7 @@ Route::get('/products/get', [ProductController::class, 'get']);
 
 
 Route::prefix('admin')->middleware('admin')->group(function() {
+    Route::get('/categories/get', [CategoryController::class, 'get']);
     Route::get('/categoriesList', [CategoryController::class, 'list'])->name('categories');
     Route::post('/categories/create', [CategoryController::class, 'create']);
     Route::post('/products/create', [ProductController::class, 'create']);

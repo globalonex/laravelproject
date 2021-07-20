@@ -39,7 +39,7 @@
         },
         methods: {
             getCategories () {
-                axios.get('/admin/categories/get')
+                axios.get('/api/admin/categories/get')
                 .then(({data}) => {
                     this.categories = data
                 })
@@ -53,7 +53,7 @@
                     name: this.categoryName,
                     desc: this.categoryDesc
                 }
-                axios.post('/admin/categories/create', params)
+                axios.post('/api/admin/categories/create', params)
                 .then(() => {
                     document.location.reload();
                 })

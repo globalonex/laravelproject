@@ -3,7 +3,7 @@
 
     <div class="row no-gutters">
         <div class="col-md-4">
-        <img width="180" :src="`/storage/img/${product.picture}`">
+        <img width="180" :src="picture">
         </div>
         <div class="col-md-8">
         <div class="card-body">
@@ -50,6 +50,9 @@ export default {
         }
     },
     computed: {
+        picture () {
+          return this.product.picture ? `/storage/img/${this.product.picture}` : '/storage/img/noimage.png'  
+        },
         productQuantity() {
             const product = this.orderProducts.find(cartProduct => {
                 return cartProduct.id == this.product.id
