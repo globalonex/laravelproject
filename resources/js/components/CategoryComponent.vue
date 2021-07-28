@@ -1,6 +1,6 @@
 <template>
     <div class="card">
-        <h5 class="card-header">{{category.title}}</h5>
+        <h5 class="text-center pt-4">{{category.title}}</h5>
         <div class="card-body">
             <p class="card-text">
                 {{category.description}}
@@ -14,6 +14,7 @@
 
 export default {
     props: ['category']
+
 }
 </script>
 

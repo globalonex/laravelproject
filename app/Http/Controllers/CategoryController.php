@@ -58,6 +58,12 @@ class CategoryController extends Controller
 
     public function create(Request $request)
     {
+
+        $this->validate($request, [
+            'name' => ['required', 'max:255'],
+            'desc' => ['required', 'max:255']
+        ]);
+
         sleep(1);
         Category::create([
             'title' => $request['name'],
@@ -68,5 +74,9 @@ class CategoryController extends Controller
     public function get()
     {
         return Category::get();
+    }
+    public function deleteCategory($id)
+    {
+        Category::find($id)->delete();
     }
 }

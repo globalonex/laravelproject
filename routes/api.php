@@ -51,6 +51,7 @@ Route::prefix('admin')->middleware('admin')->group(function() {
     Route::get('/categories/get', [CategoryController::class, 'get']);
     Route::get('/categoriesList', [CategoryController::class, 'list'])->name('categories');
     Route::post('/categories/create', [CategoryController::class, 'create']);
+	Route::post('/categories/deleteCategory/{id}', [CategoryController::class, 'deleteCategory']);
     Route::post('/products/create', [ProductController::class, 'create']);
     Route::get('/products', [ProductController::class, 'list'])->name('products');
 });

@@ -45,12 +45,12 @@
                                 </a>
 
                                 <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdown">
-                                    <router-link class="btn btn-link" to="/profile">Личный кабинет</router-link>
+                                    <router-link class="dropdown-item btn btn-link" to="/profile">Личный кабинет</router-link>
                                     
-                                    <button @click="logout" class="btn btn-link">Выход</button>
+                                    <button @click="logout" class="dropdown-item btn btn-link">Выход</button>
                                     <template v-if='user.admin'>
-                                        <router-link class="btn btn-link" to='/admin/categories'>Категории</router-link>
-                                        <router-link class="btn btn-link" to='/admin/products'>Продукты</router-link>
+                                        <router-link class="dropdown-item btn btn-link" to='/admin/categories'>Категории</router-link>
+                                        <router-link class="dropdown-item btn btn-link" to='/admin/products'>Продукты</router-link>
                                     </template>
                                 </div>
                             </li>
